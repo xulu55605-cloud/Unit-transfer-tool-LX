@@ -1,0 +1,415 @@
+html_content_v2 = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发动机参数转换工具</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+            padding: 20px 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* 作者信息 */
+        .author {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 30px;
+            color: #1a202c;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* 美化的标签栏 */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: #f7fafc;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tab-button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #4a5568;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        /* 4个标签定义不同的专属底色与高亮效果 */
+        .tab-button[data-tab="kg_h2mg_str"].active {
+            background-color: #3182ce;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+        }
+        .tab-button[data-tab="mg_str2kg_h"].active {
+            background-color: #319795;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(49, 151, 149, 0.3);
+        }
+        .tab-button[data-tab="CA2us"].active {
+            background-color: #805ad5;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(128, 90, 213, 0.3);
+        }
+        .tab-button[data-tab="us2CA"].active {
+            background-color: #dd6b20;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(221, 107, 32, 0.3);
+        }
+
+        .tab-button:not(.active):hover {
+            background-color: #edf2f7;
+            color: #2d3748;
+        }
+
+        /* 内容区动画 */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.35s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: #fcfdfd;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            background-color: #fff;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        /* 结果框根据不同面板继承主题色 border */
+        .result-box {
+            margin-top: 25px;
+            padding: 18px 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        #kg_h2mg_str .result-box { background-color: #ebf8ff; border-left: 4px solid #3182ce; }
+        #mg_str2kg_h .result-box { background-color: #e6fffa; border-left: 4px solid #319795; }
+        #CA2us .result-box { background-color: #faf5ff; border-left: 4px solid #805ad5; }
+        #us2CA .result-box { background-color: #fffaf0; border-left: 4px solid #dd6b20; }
+
+        .result-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #kg_h2mg_str .result-title { color: #2b6cb0; }
+        #mg_str2kg_h .result-title { color: #234e52; }
+        #CA2us .result-title { color: #553c9a; }
+        #us2CA .result-title { color: #9c4221; }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: "SF Mono", SFMono-Regular, Consolas, monospace;
+        }
+        #kg_h2mg_str .result-value { color: #2c5282; }
+        #mg_str2kg_h .result-value { color: #2c7a7b; }
+        #CA2us .result-value { color: #6b46c1; }
+        #us2CA .result-value { color: #c05621; }
+
+        .note {
+            margin-top: 20px;
+            padding: 12px 15px;
+            background-color: #f7fafc;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.6;
+            border: 1px dashed #e2e8f0;
+        }
+
+        /* 手机竖屏自适应优化 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px 10px;
+            }
+            .container {
+                padding: 25px 15px;
+                border-radius: 12px;
+            }
+            .author {
+                position: static;
+                display: inline-block;
+                margin-bottom: 15px;
+                float: right;
+            }
+            h1 {
+                clear: both;
+                font-size: 18px;
+                margin-top: 10px;
+                margin-bottom: 20px;
+            }
+            .tabs {
+                flex-direction: column; /* 竖屏时标签堆叠，手指更好点击 */
+                gap: 6px;
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+            .tab-button {
+                width: 100%;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                background: #fff;
+                padding: 14px 10px; /* 增大点击区域 */
+                font-size: 14px;
+            }
+            .tab-button:not(.active):hover {
+                background-color: #f7fafc;
+            }
+            input[type="number"] {
+                font-size: 16px; /* 避免 iOS 自动放大页面 */
+                padding: 14px;   /* 更适合手指点击 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="author">作者：LU Xu</div>
+    <h1>发动机参数转换工具</h1>
+    
+    <div class="tabs">
+        <button class="tab-button active" data-tab="kg_h2mg_str" onclick="switchTab(event, 'kg_h2mg_str')">kg/h ➔ mg/str</button>
+        <button class="tab-button" data-tab="mg_str2kg_h" onclick="switchTab(event, 'mg_str2kg_h')">mg/str ➔ kg/h</button>
+        <button class="tab-button" data-tab="CA2us" onclick="switchTab(event, 'CA2us')">CA ➔ us (曲轴转角➔微秒)</button>
+        <button class="tab-button" data-tab="us2CA" onclick="switchTab(event, 'us2CA')">us ➔ CA (微秒➔曲轴转角)</button>
+    </div>
+
+    <div id="kg_h2mg_str" class="tab-content active" style="display: block; opacity: 1; transform: translateY(0);">
+        <div class="form-group">
+            <label for="rpm1">发动机转速 (rpm):</label>
+            <input type="number" id="rpm1" value="1200" oninput="calc_kg_h2mg_str()">
+        </div>
+        <div class="form-group">
+            <label for="kgh1">质量流量 (kg/h):</label>
+            <input type="number" id="kgh1" value="5.69" step="0.01" oninput="calc_kg_h2mg_str()">
+        </div>
+        <div class="form-group">
+            <label for="cyl1">气缸数 (Cylinder No):</label>
+            <input type="number" id="cyl1" value="4" oninput="calc_kg_h2mg_str()">
+        </div>
+        <div class="result-box">
+            <div class="result-title">计算结果 (mg/str):</div>
+            <div class="result-value" id="res1">39.513889</div>
+        </div>
+        <div class="note">
+            <strong>公式提示：</strong>对于四冲程发动机，每个气缸每两转有一次喷油（作功）。<br>
+            <code>mg/str = (kg/h * 1,000,000) / (30 * rpm * 气缸数)</code>
+        </div>
+    </div>
+
+    <div id="mg_str2kg_h" class="tab-content">
+        <div class="form-group">
+            <label for="rpm2">发动机转速 (rpm):</label>
+            <input type="number" id="rpm2" value="1200" oninput="calc_mg_str2kg_h()">
+        </div>
+        <div class="form-group">
+            <label for="mgstr2">单缸单次喷油量 (mg/str):</label>
+            <input type="number" id="mgstr2" value="58" step="0.1" oninput="calc_mg_str2kg_h()">
+        </div>
+        <div class="form-group">
+            <label for="cyl2">气缸数 (Cylinder No):</label>
+            <input type="number" id="cyl2" value="4" oninput="calc_mg_str2kg_h()">
+        </div>
+        <div class="result-box">
+            <div class="result-title">计算结果 (kg/h):</div>
+            <div class="result-value" id="res2">8.352000</div>
+        </div>
+        <div class="note">
+            <strong>公式提示：</strong><code>kg/h = (mg/str * 30 * rpm * 气缸数) / 1,000,000</code>
+        </div>
+    </div>
+
+    <div id="CA2us" class="tab-content">
+        <div class="form-group">
+            <label for="ca3">曲轴转角值 (Degree crank):</label>
+            <input type="number" id="ca3" value="30" step="0.1" oninput="calc_CA2us()">
+        </div>
+        <div class="form-group">
+            <label for="rpm3">发动机转速 (1/min 或 rpm):</label>
+            <input type="number" id="rpm3" value="2030" oninput="calc_CA2us()">
+        </div>
+        <div class="result-box">
+            <div class="result-title">计算结果 (us):</div>
+            <div class="result-value" id="res3">2463.054187</div>
+        </div>
+        <div class="note">
+            <strong>公式提示：</strong><code>us = (Degree crank * 1,000,000) / (6 * rpm)</code>
+        </div>
+    </div>
+
+    <div id="us2CA" class="tab-content">
+        <div class="form-group">
+            <label for="us4">微秒值 (value in us):</label>
+            <input type="number" id="us4" value="20" step="0.1" oninput="calc_us2CA()">
+        </div>
+        <div class="form-group">
+            <label for="rpm4">发动机转速 (1/min 或 rpm):</label>
+            <input type="number" id="rpm4" value="2000" oninput="calc_us2CA()">
+        </div>
+        <div class="result-box">
+            <div class="result-title">计算结果 (Degree crank):</div>
+            <div class="result-value" id="res4">0.240000</div>
+        </div>
+        <div class="note">
+            <strong>公式提示：</strong><code>Degree crank = (us * 6 * rpm) / 1,000,000</code>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(evt, tabId) {
+        var i, tabcontent, tablinks;
+        
+        // 隐藏所有内容并去除激活样式
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove("active");
+        }
+        
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        
+        // 激活当前点击的标签
+        var targetContent = document.getElementById(tabId);
+        targetContent.style.display = "block";
+        
+        // 触发重绘以平滑激活CSS动画动效
+        setTimeout(function() {
+            targetContent.classList.add("active");
+        }, 10);
+        
+        evt.currentTarget.classList.add("active");
+    }
+
+    function calc_kg_h2mg_str() {
+        var rpm = parseFloat(document.getElementById('rpm1').value);
+        var kgh = parseFloat(document.getElementById('kgh1').value);
+        var cyl = parseFloat(document.getElementById('cyl1').value);
+        if (rpm && kgh && cyl) {
+            var res = (kgh * 1000000) / (30 * rpm * cyl);
+            document.getElementById('res1').innerText = res.toFixed(6);
+        } else {
+            document.getElementById('res1').innerText = "0.000000";
+        }
+    }
+
+    function calc_mg_str2kg_h() {
+        var rpm = parseFloat(document.getElementById('rpm2').value);
+        var mgstr = parseFloat(document.getElementById('mgstr2').value);
+        var cyl = parseFloat(document.getElementById('cyl2').value);
+        if (rpm && mgstr && cyl) {
+            var res = (mgstr * 30 * rpm * cyl) / 1000000;
+            document.getElementById('res2').innerText = res.toFixed(6);
+        } else {
+            document.getElementById('res2').innerText = "0.000000";
+        }
+    }
+
+    function calc_CA2us() {
+        var ca = parseFloat(document.getElementById('ca3').value);
+        var rpm = parseFloat(document.getElementById('rpm3').value);
+        if (rpm) {
+            var res = (ca * 1000000) / (6 * rpm);
+            document.getElementById('res3').innerText = res.toFixed(6);
+        } else {
+            document.getElementById('res3').innerText = "0.000000";
+        }
+    }
+
+    function calc_us2CA() {
+        var us = parseFloat(document.getElementById('us4').value);
+        var rpm = parseFloat(document.getElementById('rpm4').value);
+        if (rpm) {
+            var res = (us * 6 * rpm) / 1000000;
+            document.getElementById('res4').innerText = res.toFixed(6);
+        } else {
+            document.getElementById('res4').innerText = "0.000000";
+        }
+    }
+</script>
+
+</body>
+</html>
+

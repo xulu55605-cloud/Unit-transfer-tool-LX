@@ -1,0 +1,22 @@
+{
+  "name": "发动机参数在线转换工具",
+  "short_name": "发动机转换",
+  "description": "基于发动机转速的各项物理参数计算与转换工具",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#3182ce",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
