@@ -1,0 +1,17 @@
+{
+  "name": "发动机参数在线转换工具",
+  "short_name": "发动机转换",
+  "description": "基于发动机转速的各项物理参数计算与转换工具",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#3182ce",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5NiIgZmlsbD0idXJsKCNnKSIvPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzZCYTRDMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzMxODJDRSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSUzMTAiIHJ4PSI5MCIgcnk9IjkwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMTYiIHN0cm9rZS1kYXNoYXJyYXk9IjIwIDMwIi8+PHBhdGggZD0iTTM5MCAxNjBMMzUwIDEyMGMtOC04LTIwLTgtMjggMEwyMTIgMjUybC00MC00MGMtOC04LTIwLTgtMjggMEwxMDQgMjU2Yy04IDgtOCAyMCAwIDI4bDQwIDQwTDEwMCAzNThjLTggOC0yMCAyMCAwIDI4bDQwIDQwYzggOCAyMCA4IDI4IDBMMjQ4IDM4OGw0MCA0MGMgOCA4IDIwIDggMjggMGw0MC00MGM8LTgtOC0yMCAwLTI4bC00MC00bDExNC0xMTRjOC04IDgtMjAgMC0yOHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
